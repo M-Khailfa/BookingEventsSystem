@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Source/">
+    <Project Path="BookingEvents.API/BookingEvents.API.csproj" />
+    <Project Path="BookingEvents.Core/BookingEvents.Core.csproj" />
+    <Project Path="BookingEvents.Infrastructure/BookingEvents.Infrastructure.csproj" />
+  </Folder>
+</Solution>
