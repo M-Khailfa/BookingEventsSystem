@@ -1,8 +1,11 @@
-﻿using BookingEvents.Core.DTOs;
+﻿using Azure;
+using BookingEvents.Core.DTOs;
 using BookingEvents.Core.Interfaces;
+using BookingEvents.Core.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BookingEvents.API.Controllers
 {
@@ -20,26 +23,40 @@ namespace BookingEvents.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
+            var response = new ApiResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response = ApiResponse.BadRequest(ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList(), HttpStatusCode.BadRequest);
+                return BadRequest(response);
             }
 
             var result = await _authService.RegisterAsync(registerDto);
             if (!result.IsAuthenticated)
-                return BadRequest(result.Message);
+            {
+                response = ApiResponse.BadRequest(new List<string> { result.Message }, HttpStatusCode.BadRequest);
+                return BadRequest(response);
+            }
 
             SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
 
-            return Ok(result);
+            response = ApiResponse.Success(result.Email, result.Message, HttpStatusCode.Created);
+            return Ok(response);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
+            var response = new ApiResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response = ApiResponse.BadRequest(ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList(), HttpStatusCode.BadRequest);
+                return BadRequest(response);
             }
 
             var result = await _authService.LoginAsync(loginDto);
@@ -51,55 +68,81 @@ namespace BookingEvents.API.Controllers
                 SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
             }
 
-            return Ok(result);
+            response = ApiResponse.Success(result, result.Message, HttpStatusCode.Created);
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost("addRole")]
         public async Task<IActionResult> AddRole([FromBody] AddRoleDto addRoleDto)
         {
+            var response = new ApiResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response = ApiResponse.BadRequest(ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList(), HttpStatusCode.BadRequest);
+                return BadRequest(response);
             }
             var result = await _authService.AddRoleAsync(addRoleDto);
             if (result != "Done")
-                return BadRequest(result);
-            return Ok(result);
+            {
+                response = ApiResponse.BadRequest(new List<string> { result }, HttpStatusCode.BadRequest);
+                return BadRequest(response);
+            }
+            response = ApiResponse.Success(result, "Role added successfully", HttpStatusCode.OK);
+            return Ok(response);
         }
 
-        [HttpGet("refreshToken")]
+        [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken()
         {
+            var response = new ApiResponse();
             var refreshToken = Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(refreshToken))
-                return BadRequest("No refresh token found in cookies.");
+            {
+                response = ApiResponse.BadRequest(new List<string> { "No refresh token provided." }, HttpStatusCode.BadRequest);
+                return BadRequest(response);
+            }
 
             var result = await _authService.RefreshTokenAsync(refreshToken);
 
             if (!result.IsAuthenticated)
-                return BadRequest(result);
+            {
+                response = ApiResponse.BadRequest(new List<string> { result.Message }, HttpStatusCode.BadRequest);
+                return BadRequest(response);
+            }
 
             if (!string.IsNullOrEmpty(result.RefreshToken))
             {
                 SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
             }
 
-            return Ok(result);
+            response = ApiResponse.Success(result, "Token refreshed successfully", HttpStatusCode.OK);
+            return Ok(response);
         }
 
-        [HttpPost]
+        [HttpPost("revoke-token")]
         public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenDto revokeTokenDto)
         {
+            var response = new ApiResponse();
             var token = revokeTokenDto.token ?? Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(token))
-                return BadRequest("No token provided.");
+            {
+                response = ApiResponse.BadRequest(new List<string> { "No token provided." }, HttpStatusCode.BadRequest);
+                return BadRequest(response);
+            }
             var result = await _authService.RevokeTokenAsync(token);
             if (!result)
-                return BadRequest("Token revocation failed.");
+            {
+                response = ApiResponse.BadRequest(new List<string> { "Token revocation failed." }, HttpStatusCode.BadRequest);
+                return BadRequest(response);
+            }
             Response.Cookies.Delete("refreshToken");
-            return Ok("Token revoked successfully.");
+            response = ApiResponse.Success(null, "Token revoked successfully.", HttpStatusCode.OK);
+            return Ok(response);
         }
 
 

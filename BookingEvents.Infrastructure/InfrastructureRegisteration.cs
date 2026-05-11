@@ -24,6 +24,7 @@ namespace BookingEvents.Infrastructure
             });
 
             services.Configure<JWT>(configuration.GetSection("JWT"));
+            services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
 
             services
                 .AddIdentity<AppUser, IdentityRole>()
@@ -42,17 +43,19 @@ namespace BookingEvents.Infrastructure
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
                         ValidateLifetime = true,
-                        ValidIssuer = configuration["JWT:Issuer"],
-                        ValidAudience = configuration["JWT:Audience"],
+                        //ValidIssuer = configuration["JWT:Issuer"],
+                        //ValidAudience = configuration["JWT:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"])),
                         ClockSkew = TimeSpan.Zero
                     };
                 });
 
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IEventsService, EventsService>();
 
             return services;
         }
