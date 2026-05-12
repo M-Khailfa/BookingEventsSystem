@@ -76,7 +76,7 @@ namespace BookingEvents.API.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost("addRole")]
+        [HttpPost("roles")]
         public async Task<IActionResult> AddRole([FromBody] AddRoleDto addRoleDto)
         {
             var response = new ApiResponse();

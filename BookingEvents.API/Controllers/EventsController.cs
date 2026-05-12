@@ -20,7 +20,7 @@ namespace BookingEvents.API.Controllers
             _eventsService = eventsService;
         }
 
-        [HttpGet("events")]
+        [HttpGet]
         public async Task<IActionResult> GetAllEvents([FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string search = "")
         {
             var response = new ApiResponse();
@@ -42,7 +42,7 @@ namespace BookingEvents.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("event/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetEventByIdAsync(int id)
         {
             var response = new ApiResponse();
@@ -62,7 +62,7 @@ namespace BookingEvents.API.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost("create-event")]
+        [HttpPost]
         public async Task<IActionResult> CreateEventAsync([FromForm] EventDto eventDto)
         {
             var response = new ApiResponse();
@@ -87,7 +87,7 @@ namespace BookingEvents.API.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("delete-event/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEventAsync(int id)
         {
             var response = new ApiResponse();
@@ -109,7 +109,7 @@ namespace BookingEvents.API.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPut("update-event/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEventAsync(int id, [FromBody] EventDto eventDto)
         {
             var response = new ApiResponse();
@@ -136,7 +136,7 @@ namespace BookingEvents.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("event/category/{category}")]
+        [HttpGet("category/{category}")]
         public async Task<IActionResult> GetEventsByCategory(string category,[FromQuery] int pageSize = 3,[FromQuery] int pageNumber = 1)
         {
             var response = new ApiResponse();

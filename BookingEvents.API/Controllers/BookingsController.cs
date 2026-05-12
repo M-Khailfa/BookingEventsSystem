@@ -39,7 +39,7 @@ namespace BookingEvents.API.Controllers
             return Ok(response);
         }
 
-        [HttpPost("book")]
+        [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateBookingAsync(BookingDto bookingDto)
         {
@@ -57,7 +57,7 @@ namespace BookingEvents.API.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("Cancel/{bookingId}")]
+        [HttpDelete("{bookingId}")]
         [Authorize]
         public async Task<IActionResult> DeleteBookingAsync(int bookingId)
         {
