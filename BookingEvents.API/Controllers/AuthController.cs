@@ -29,18 +29,21 @@ namespace BookingEvents.API.Controllers
                 response = ApiResponse.BadRequest(ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
-                    .ToList(), HttpStatusCode.BadRequest);
+                    .ToList());
                 return BadRequest(response);
             }
 
             var result = await _authService.RegisterAsync(registerDto);
             if (!result.IsAuthenticated)
             {
-                response = ApiResponse.BadRequest(new List<string> { result.Message }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest(new List<string> { result.Message });
                 return BadRequest(response);
             }
 
-            SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
+            if (!string.IsNullOrEmpty(result.RefreshToken))
+            {
+                SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
+            }
 
             response = ApiResponse.Success(result.Email, result.Message, HttpStatusCode.Created);
             return Ok(response);
@@ -55,7 +58,7 @@ namespace BookingEvents.API.Controllers
                 response = ApiResponse.BadRequest(ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
-                    .ToList(), HttpStatusCode.BadRequest);
+                    .ToList());
                 return BadRequest(response);
             }
 
@@ -68,7 +71,7 @@ namespace BookingEvents.API.Controllers
                 SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
             }
 
-            response = ApiResponse.Success(result, result.Message, HttpStatusCode.Created);
+            response = ApiResponse.Success(result, result.Message, HttpStatusCode.OK);
             return Ok(response);
         }
 
@@ -82,13 +85,13 @@ namespace BookingEvents.API.Controllers
                 response = ApiResponse.BadRequest(ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
-                    .ToList(), HttpStatusCode.BadRequest);
+                    .ToList());
                 return BadRequest(response);
             }
             var result = await _authService.AddRoleAsync(addRoleDto);
             if (result != "Done")
             {
-                response = ApiResponse.BadRequest(new List<string> { result }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest(result);
                 return BadRequest(response);
             }
             response = ApiResponse.Success(result, "Role added successfully", HttpStatusCode.OK);
@@ -103,7 +106,7 @@ namespace BookingEvents.API.Controllers
 
             if (string.IsNullOrEmpty(refreshToken))
             {
-                response = ApiResponse.BadRequest(new List<string> { "No refresh token provided." }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("No refresh token provided.");
                 return BadRequest(response);
             }
 
@@ -111,7 +114,7 @@ namespace BookingEvents.API.Controllers
 
             if (!result.IsAuthenticated)
             {
-                response = ApiResponse.BadRequest(new List<string> { result.Message }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest(result.Message);
                 return BadRequest(response);
             }
 
@@ -131,13 +134,13 @@ namespace BookingEvents.API.Controllers
             var token = revokeTokenDto.token ?? Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(token))
             {
-                response = ApiResponse.BadRequest(new List<string> { "No token provided." }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("No token provided.");
                 return BadRequest(response);
             }
             var result = await _authService.RevokeTokenAsync(token);
             if (!result)
             {
-                response = ApiResponse.BadRequest(new List<string> { "Token revocation failed." }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("Token revocation failed.");
                 return BadRequest(response);
             }
             Response.Cookies.Delete("refreshToken");

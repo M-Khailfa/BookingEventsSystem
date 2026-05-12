@@ -56,6 +56,7 @@ namespace BookingEvents.Infrastructure
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IEventsService, EventsService>();
+            services.AddScoped<IBookingService, BookingService>();
 
             return services;
         }

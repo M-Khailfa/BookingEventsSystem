@@ -21,7 +21,7 @@ namespace BookingEvents.Infrastructure.Repos
         {
             if(eventDto is null)
             {
-                return new StatusDto { Successed = false, Message = "Event data is required." };
+                return new StatusDto { Succeeded = false, Message = "Event data is required." };
             }
             
             string imageUrl = null;
@@ -41,14 +41,14 @@ namespace BookingEvents.Infrastructure.Repos
                 };
                 _context.Events.Add(newEvent);
                 await _context.SaveChangesAsync();
-                return new StatusDto { Successed = true, Message = "Event created successfully." };
+                return new StatusDto { Succeeded = true, Message = "Event created successfully." };
             }
             catch (Exception ex)
             {
                 if(imageUrl is not null)
                     await _imageService.DeleteImageAsync(imageUrl);
 
-                return new StatusDto { Successed = false, Message = $"Failed to create event. {ex.Message}" };
+                return new StatusDto { Succeeded = false, Message = $"Failed to create event. {ex.Message}" };
             }
         }
 
@@ -57,7 +57,7 @@ namespace BookingEvents.Infrastructure.Repos
             var eventToDelete = await _context.Events.FindAsync(id);
             if (eventToDelete is null)
             {
-                return new StatusDto { Successed = false, Message = "Wrong Provided Id." };
+                return new StatusDto { Succeeded = false, Message = "Wrong Provided Id." };
             }
 
             try
@@ -67,7 +67,7 @@ namespace BookingEvents.Infrastructure.Repos
             }
             catch (Exception ex)
             {
-                return new StatusDto { Successed = false, Message = $"Failed to delete event. {ex.Message}" };
+                return new StatusDto { Succeeded = false, Message = $"Failed to delete event. {ex.Message}" };
             }
 
             try
@@ -76,9 +76,9 @@ namespace BookingEvents.Infrastructure.Repos
             }
             catch
             {
-                return new StatusDto { Successed = true, Message = "Event deleted successfully. But Image Didn't Deleted" };
+                return new StatusDto { Succeeded = true, Message = "Event deleted successfully. But Image Didn't Deleted" };
             }
-            return new StatusDto { Successed = true, Message = "Event deleted successfully." };
+            return new StatusDto { Succeeded = true, Message = "Event deleted successfully." };
         }
 
         public async Task<PagedResult<ReturnedEventDto>> GetAllEventsAsync(int pageSize = 3, int pageNumber = 1, string search = "")
@@ -169,23 +169,23 @@ namespace BookingEvents.Infrastructure.Repos
 
         public async Task<ReturnedEventDto> GetEventByIdAsync(int id)
         {
-            var returnEvent = await _context.Events.FindAsync(id);
+            var result = await _context.Events.FindAsync(id);
 
-            if (returnEvent is null)
+            if (result is null)
             {
-                return new ReturnedEventDto { Successed = false, Message = "Wrong Provided Id." };
+                return new ReturnedEventDto();
             }
 
             return new ReturnedEventDto
             {
-                Id = returnEvent.Id,
-                Name = returnEvent.Name,
-                Description = returnEvent.Description,
-                Category = returnEvent.Category,
-                Price = returnEvent.Price,
-                Place = returnEvent.Place,
-                Date = returnEvent.Date,
-                ImageURL = returnEvent.ImageURL,
+                Id = result.Id,
+                Name = result.Name,
+                Description = result.Description,
+                Category = result.Category,
+                Price = result.Price,
+                Place = result.Place,
+                Date = result.Date,
+                ImageURL = result.ImageURL,
                 Successed = true,
                 Message = "Event retrieved successfully."
             };

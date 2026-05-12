@@ -27,16 +27,14 @@ namespace BookingEvents.API.Controllers
 
             if (pageSize <= 0 || pageNumber <= 0)
             {
-                response = ApiResponse.BadRequest(
-                    new List<string> { "pageSize and pageNumber must be greater than 0." },
-                    HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("pageSize and pageNumber must be greater than 0.");
                 return BadRequest(response);
             }
 
             var events = await _eventsService.GetAllEventsAsync(pageSize, pageNumber);
             if (events.Items is null || !events.Items.Any())
             {
-                response = ApiResponse.BadRequest(new List<string> { "Failed to retrieve events." }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("Failed to retrieve events.");
                 return BadRequest(response);
             }
 
@@ -50,15 +48,13 @@ namespace BookingEvents.API.Controllers
             var response = new ApiResponse();
             if (id <= 0)
             {
-                response = ApiResponse.BadRequest(
-                    new List<string> { "Id must be greater than 0." },
-                    HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("Id must be greater than 0.");
                 return BadRequest(response);
             }
             var targetevent = await _eventsService.GetEventByIdAsync(id);
             if (targetevent is null)
             {
-                response = ApiResponse.BadRequest(new List<string> { "Failed to retrieve event." }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("Failed to retrieve event.");
                 return BadRequest(response);
             }
             response = ApiResponse.Success(targetevent, "Event retrieved successfully.", HttpStatusCode.OK);
@@ -67,23 +63,23 @@ namespace BookingEvents.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost("create-event")]
-        public async Task<IActionResult> CreateEventAsync([FromBody] EventDto eventDto)
+        public async Task<IActionResult> CreateEventAsync([FromForm] EventDto eventDto)
         {
             var response = new ApiResponse();
-
+            
             if (!ModelState.IsValid)
             {
                 response = ApiResponse.BadRequest(ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
-                    .ToList(), HttpStatusCode.BadRequest);
+                    .ToList());
                 return BadRequest(response);
             }
 
             var result = await _eventsService.CreateEventAsync(eventDto);
-            if (!result.Successed)
+            if (!result.Succeeded)
             {
-                response = ApiResponse.BadRequest(new List<string> { result.Message }, HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest(result.Message);
                 return BadRequest(response);
             }
             response = ApiResponse.Success(null, result.Message, HttpStatusCode.Created);
@@ -98,16 +94,14 @@ namespace BookingEvents.API.Controllers
 
             if (id <= 0)
             {
-                response = ApiResponse.BadRequest(
-                    new List<string> { "Id must be greater than 0." },
-                    HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("Id must be greater than 0.");
                 return BadRequest(response);
             }
 
             var result = await _eventsService.DeleteEventByIdAsync(id);
-            if (!result.Successed)
+            if (!result.Succeeded)
             {
-                response = ApiResponse.NotFound(result.Message, HttpStatusCode.NotFound);
+                response = ApiResponse.NotFound(result.Message);
                 return NotFound(response);
             }
 
@@ -121,9 +115,7 @@ namespace BookingEvents.API.Controllers
             var response = new ApiResponse();
             if (id <= 0)
             {
-                response = ApiResponse.BadRequest(
-                    new List<string> { "Id must be greater than 0." },
-                    HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("Id must be greater than 0.");
                 return BadRequest(response);
             }
             if (!ModelState.IsValid)
@@ -131,13 +123,13 @@ namespace BookingEvents.API.Controllers
                 response = ApiResponse.BadRequest(ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
-                    .ToList(), HttpStatusCode.BadRequest);
+                    .ToList());
                 return BadRequest(response);
             }
             var result = await _eventsService.UpdateEventByIdAsync(id, eventDto);
             if (!result.Successed)
             {
-                response = ApiResponse.NotFound(result.Message, HttpStatusCode.NotFound);
+                response = ApiResponse.NotFound(result.Message);
                 return NotFound(response);
             }
             response = ApiResponse.Success(result, result.Message, HttpStatusCode.OK);
@@ -150,7 +142,7 @@ namespace BookingEvents.API.Controllers
             var response = new ApiResponse();
             if (string.IsNullOrWhiteSpace(category))
             {
-                response = ApiResponse.BadRequest(new List<string> { "Category cannot be empty." },HttpStatusCode.BadRequest);
+                response = ApiResponse.BadRequest("Category cannot be empty.");
                 return BadRequest(response);
             }
 
@@ -158,7 +150,7 @@ namespace BookingEvents.API.Controllers
 
             if (!result.Items.Any())
             {
-                response = ApiResponse.NotFound($"No events found for category '{category}'.", HttpStatusCode.NotFound);
+                response = ApiResponse.NotFound($"No events found for category '{category}'.");
                 return NotFound(response);
             }
             response = ApiResponse.Success(result, $"Events for category '{category}' retrieved successfully.", HttpStatusCode.OK);
