@@ -22,12 +22,12 @@ The solution is divided into three main projects:
 
 ## 🛠️ Technology Stack
 
-*   **.NET 8.0** (or your targeted version)
+*   **.NET 10.0**
 *   **C#**
 *   **Entity Framework Core (SQL Server)**
 *   **ASP.NET Core Identity** (for User Management)
 *   **JWT Bearer Authentication**
-*   **Swagger / OpenAPI**
+*   **Swagger**
 
 ## 🚦 Getting Started
 
@@ -40,7 +40,7 @@ The solution is divided into three main projects:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/BookingEvents.git
+    git clone https://github.com/M-Khailfa/BookingEventsSystem.git
     cd BookingEvents
     ```
 
