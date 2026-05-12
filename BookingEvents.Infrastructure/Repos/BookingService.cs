@@ -21,7 +21,7 @@ namespace BookingEvents.Infrastructure.Repos
             _userManager = userManager;
         }
 
-        public async Task<ReturnBookingDto> CreateBookingAsync(BookingDto bookingDto)
+        public async Task<ReturnBookingDto> CreateBookingAsync(BookingDto bookingDto, string userId)
         {
             var returnBookingDto = new ReturnBookingDto();
 
@@ -32,7 +32,7 @@ namespace BookingEvents.Infrastructure.Repos
                 return returnBookingDto;
             }
 
-            var user = await _context.Users.FindAsync(bookingDto.UserId);
+            var user = await _context.Users.FindAsync(userId);
             if (user is null)
             {
                 returnBookingDto.Message = "User not found.";
@@ -40,7 +40,7 @@ namespace BookingEvents.Infrastructure.Repos
             }
 
             bool alreadyBooked = await _context.Bookings
-                .AnyAsync(b => b.EventID == bookingDto.EventId && b.UserID == bookingDto.UserId);
+                .AnyAsync(b => b.EventID == bookingDto.EventId && b.UserID == userId);
             if (alreadyBooked)
             {
                 returnBookingDto.Message = "User has already booked this event.";
@@ -50,7 +50,7 @@ namespace BookingEvents.Infrastructure.Repos
             var booking = new Booking
             {
                 EventID = bookingDto.EventId,
-                UserID = bookingDto.UserId
+                UserID = userId
             };
 
             _context.Bookings.Add(booking);

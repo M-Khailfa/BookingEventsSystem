@@ -136,7 +136,7 @@ namespace BookingEvents.Infrastructure.Repos
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
             }
             .Union(userClaims)
             .Union(roleClaims);
@@ -219,9 +219,7 @@ namespace BookingEvents.Infrastructure.Repos
 
         private RefreshTokenDto GenerateRefreshToken()
         {
-            var randomNumber = new byte[32];
-            using var generator = new RNGCryptoServiceProvider();
-            generator.GetBytes(randomNumber);
+            var randomNumber = RandomNumberGenerator.GetBytes(32);
             return new RefreshTokenDto
             {
                 Token = Convert.ToBase64String(randomNumber),

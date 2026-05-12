@@ -44,7 +44,8 @@ namespace BookingEvents.API.Controllers
         public async Task<IActionResult> CreateBookingAsync(BookingDto bookingDto)
         {
             var response = new ApiResponse();
-            var result = await _bookingService.CreateBookingAsync(bookingDto);
+            var requestingUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _bookingService.CreateBookingAsync(bookingDto, requestingUserId);
 
             if(!result.Succeeded)
             {

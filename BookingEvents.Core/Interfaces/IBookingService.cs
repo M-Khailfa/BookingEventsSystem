@@ -10,7 +10,7 @@ namespace BookingEvents.Core.Interfaces
     public interface IBookingService
     {
         Task<BookingResultDto<IEnumerable<ReturnBookingDto>>> GetUserBookingsAsync(string userId);
-        Task<ReturnBookingDto> CreateBookingAsync(BookingDto bookingDto);
+        Task<ReturnBookingDto> CreateBookingAsync(BookingDto bookingDto, string userId);
         Task<StatusDto> DeleteBookingAsync(int bookingId);
         Task<ReturnBookingDto> GetBookingByIdAsync(int bookingId);
     }

@@ -1,4 +1,5 @@
 using BookingEvents.Infrastructure;
+using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
 namespace BookingEvents.API
@@ -29,6 +30,15 @@ namespace BookingEvents.API
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(async context =>
+                {
+                    context.Response.StatusCode = 500;
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsJsonAsync(new { Message = "An unexpected error occurred." });
+                });
+            });
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

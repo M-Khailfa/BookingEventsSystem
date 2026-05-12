@@ -31,11 +31,11 @@ namespace BookingEvents.API.Controllers
                 return BadRequest(response);
             }
 
-            var events = await _eventsService.GetAllEventsAsync(pageSize, pageNumber);
+            var events = await _eventsService.GetAllEventsAsync(pageSize, pageNumber, search);
             if (events.Items is null || !events.Items.Any())
             {
-                response = ApiResponse.BadRequest("Failed to retrieve events.");
-                return BadRequest(response);
+                response = ApiResponse.Success(events, "No events found.", HttpStatusCode.OK);
+                return Ok(response);
             }
 
             response = ApiResponse.Success(events, "Events retrieved successfully.", HttpStatusCode.OK);
@@ -54,8 +54,8 @@ namespace BookingEvents.API.Controllers
             var targetevent = await _eventsService.GetEventByIdAsync(id);
             if (targetevent is null)
             {
-                response = ApiResponse.BadRequest("Failed to retrieve event.");
-                return BadRequest(response);
+                response = ApiResponse.NotFound("Event not found.");
+                return NotFound(response);
             }
             response = ApiResponse.Success(targetevent, "Event retrieved successfully.", HttpStatusCode.OK);
             return Ok(response);
@@ -127,7 +127,7 @@ namespace BookingEvents.API.Controllers
                 return BadRequest(response);
             }
             var result = await _eventsService.UpdateEventByIdAsync(id, eventDto);
-            if (!result.Successed)
+            if (!result.Succeeded)
             {
                 response = ApiResponse.NotFound(result.Message);
                 return NotFound(response);

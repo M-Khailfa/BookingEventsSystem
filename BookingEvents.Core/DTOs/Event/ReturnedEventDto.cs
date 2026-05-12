@@ -17,7 +17,7 @@ namespace BookingEvents.Core.DTOs.Event
         public DateTime Date { get; set; }
         public string ImageURL { get; set; }
         [JsonIgnore]
-        public bool Successed { get; set; } = false;
+        public bool Succeeded { get; set; } = false;
         [JsonIgnore]
         public string Message { get; set; } = "";
     }

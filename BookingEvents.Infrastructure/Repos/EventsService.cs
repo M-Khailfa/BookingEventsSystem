@@ -173,7 +173,7 @@ namespace BookingEvents.Infrastructure.Repos
 
             if (result is null)
             {
-                return new ReturnedEventDto();
+                return null;
             }
 
             return new ReturnedEventDto
@@ -186,7 +186,7 @@ namespace BookingEvents.Infrastructure.Repos
                 Place = result.Place,
                 Date = result.Date,
                 ImageURL = result.ImageURL,
-                Successed = true,
+                Succeeded = true,
                 Message = "Event retrieved successfully."
             };
         }
@@ -195,13 +195,13 @@ namespace BookingEvents.Infrastructure.Repos
         {
             if(eventDto is null)
             {
-                return new ReturnedEventDto { Successed = false, Message = "Event data is required." };
+                return new ReturnedEventDto { Succeeded = false, Message = "Event data is required." };
             }
 
             var eventToUpdate = await _context.Events.FindAsync(id);
             if (eventToUpdate is null)
             {
-                return new ReturnedEventDto { Successed = false, Message = "Wrong Provided Id." };
+                return new ReturnedEventDto { Succeeded = false, Message = "Wrong Provided Id." };
             }
             try
             {
@@ -225,15 +225,15 @@ namespace BookingEvents.Infrastructure.Repos
                     }
                     catch
                     {
-                        return new ReturnedEventDto { Successed = false, Message = "Failed to update event image." };
+                        return new ReturnedEventDto { Succeeded = false, Message = "Failed to update event image." };
                     }
                 }
                 await _context.SaveChangesAsync();
-                return new ReturnedEventDto { Id = eventToUpdate.Id, Successed = true, Message = "Event updated successfully." };
+                return new ReturnedEventDto { Id = eventToUpdate.Id, Succeeded = true, Message = "Event updated successfully." };
             }
             catch (Exception ex)
             {
-                return new ReturnedEventDto { Successed = false, Message = $"Failed to update event. {ex.Message}" };
+                return new ReturnedEventDto { Succeeded = false, Message = $"Failed to update event. {ex.Message}" };
             }
         }
     }
