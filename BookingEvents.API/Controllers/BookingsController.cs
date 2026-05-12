@@ -67,7 +67,10 @@ namespace BookingEvents.API.Controllers
             var booking = await _bookingService.GetBookingByIdAsync(bookingId);
 
             if(booking is null)
-                return NotFound();
+            {
+                var response = ApiResponse.NotFound("Booking not found.");
+                return NotFound(response);
+            }
 
             if (!isAdmin && booking.UserId != requestingUserId)
                 return Forbid();
