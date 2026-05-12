@@ -75,28 +75,28 @@ namespace BookingEvents.API.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost("roles")]
-        public async Task<IActionResult> AddRole([FromBody] AddRoleDto addRoleDto)
-        {
-            var response = new ApiResponse();
-            if (!ModelState.IsValid)
-            {
-                response = ApiResponse.BadRequest(ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList());
-                return BadRequest(response);
-            }
-            var result = await _authService.AddRoleAsync(addRoleDto);
-            if (result != "Done")
-            {
-                response = ApiResponse.BadRequest(result);
-                return BadRequest(response);
-            }
-            response = ApiResponse.Success(result, "Role added successfully", HttpStatusCode.OK);
-            return Ok(response);
-        }
+        //[Authorize(Roles = "Admin")]
+        //[HttpPost("roles")]
+        //public async Task<IActionResult> AddRole([FromBody] AddRoleDto addRoleDto)
+        //{
+        //    var response = new ApiResponse();
+        //    if (!ModelState.IsValid)
+        //    {
+        //        response = ApiResponse.BadRequest(ModelState.Values
+        //            .SelectMany(v => v.Errors)
+        //            .Select(e => e.ErrorMessage)
+        //            .ToList());
+        //        return BadRequest(response);
+        //    }
+        //    var result = await _authService.AddRoleAsync(addRoleDto);
+        //    if (result != "Done")
+        //    {
+        //        response = ApiResponse.BadRequest(result);
+        //        return BadRequest(response);
+        //    }
+        //    response = ApiResponse.Success(result, "Role added successfully", HttpStatusCode.OK);
+        //    return Ok(response);
+        //}
 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken()
